@@ -61,13 +61,27 @@ func NewEventWatcher(config *rest.Config, namespace string, MaxEventAgeSeconds i
 }
 
 func (e *EventWatcher) OnAdd(obj interface{}) {
+	startTime := time.Now()
 	event := obj.(*corev1.Event)
 	e.onEvent(event)
+	duration := time.Since(startTime)
+	log.Info().
+		Str("eventNamespace", event.Namespace).
+		Str("eventName", event.Name).
+		Dur("duration", duration).
+		Msg("OnAdd execution time")
 }
 
 func (e *EventWatcher) OnUpdate(oldObj, newObj interface{}) {
+	startTime := time.Now()
 	event := newObj.(*corev1.Event)
 	e.onEvent(event)
+	duration := time.Since(startTime)
+	log.Info().
+		Str("eventNamespace", event.Namespace).
+		Str("eventName", event.Name).
+		Dur("duration", duration).
+		Msg("OnUpdate execution time")
 }
 
 // Ignore events older than the maxEventAgeSeconds.
